@@ -1,0 +1,46 @@
+# Unreal Engine: arquivos locais e pastas regeneradas pelo editor/build.
+/Binaries/
+/DerivedDataCache/
+/Intermediate/
+/Saved/
+
+# Escopo atual: versionar codigo e configuracoes; manter assets locais.
+/Content/
+/Plugins/**/Content/
+
+# Plugins: artefatos gerados durante o desenvolvimento.
+# Plugins distribuidos apenas em binario precisam de uma excecao especifica
+# para versionar sua pasta Binaries (ex.: !/Plugins/MeuPlugin/Binaries/).
+/Plugins/**/Binaries/
+/Plugins/**/DerivedDataCache/
+/Plugins/**/Intermediate/
+/Plugins/**/Saved/
+
+# Visual Studio, Rider e VS Code: estado local e projetos gerados.
+/.vs/
+/.idea/
+/.vscode/
+/*.sln
+/*.slnx
+/*.suo
+/*.sdf
+/*.opensdf
+/*.VC.db
+/*.VC.VC.opendb
+/*.vcxproj
+/*.vcxproj.filters
+/*.vcxproj.user
+/*.code-workspace
+
+# Arquivos temporarios dos editores e do sistema operacional.
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Versionar: *.uproject, *.uplugin, Source/, Config/ e Build/.
+# Build/ pode conter icones e outros recursos necessarios ao empacotamento.
+# Bibliotecas de terceiros podem exigir DLLs/LIBs: nao ignorar extensoes
+# binarias globalmente.
