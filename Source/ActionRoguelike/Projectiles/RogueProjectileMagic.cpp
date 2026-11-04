@@ -2,6 +2,7 @@
 #include "RogueProjectileMagic.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/DamageType.h"
@@ -23,6 +24,9 @@ ARogueProjectileMagic::ARogueProjectileMagic()
 	// Configura a esfera como pai na hierarquia de transformações para o registro dos componentes.
 	// Assim, o efeito acompanha o deslocamento do projétil; essa ligação não cria uma restrição física.
 	LoopedNiagaraComponent->SetupAttachment(SphereComponent);
+
+	LoopedAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("LoopedAudioComp"));
+	LoopedAudioComponent->SetupAttachment(SphereComponent);
 
 	// O componente de movimento atualiza o deslocamento do projétil. InitialSpeed define a velocidade
 	// inicial, em unidades da Unreal por segundo (normalmente cm/s), e gravidade zero desativa a queda
@@ -51,18 +55,18 @@ void ARogueProjectileMagic::PostInitializeComponents()
 // NormalImpulse representa o impulso de uma colisão física e pode ser zero em impactos por varredura (sweep).
 void ARogueProjectileMagic::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// TSubclassOf<UDamageType> guarda uma referência de classe (UClass) restrita a UDamageType
-	// ou a uma de suas subclasses. Não é uma instância de dano nem um componente.
-	// StaticClass() obtém a classe UDamageType da reflexão da Unreal, sem criar um objeto desse tipo.
-	TSubclassOf<UDamageType> DmgTypeClass = UDamageType::StaticClass();
+	FVector HitFromDirection = GetActorRotation().Vector();
+
 	// Envia dano genérico ao outro ator: 1.0f é o dano base, o Controller do instigador identifica
 	// o responsável, e this indica que o projétil é o causador direto. A reação e qualquer redução
 	// de vida dependem da implementação do ator atingido; ApplyDamage não fornece um sistema de vida pronto.
-	UGameplayStatics::ApplyDamage(OtherActor, 1.0f, GetInstigatorController(), this, DmgTypeClass);
+	UGameplayStatics::ApplyPointDamage(OtherActor, 10.f, HitFromDirection, Hit, GetInstigatorController(), this, DmgTypeClass);
 
 	// Solicita uma instância do efeito na posição atual do ator, que pode diferir do ponto de impacto.
 	// Aqui this fornece o contexto do mundo; o efeito não é anexado ao projétil por essa chamada.
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionEffect, GetActorLocation());
+
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);
 
 	// Solicita a destruição deste ator (o projétil), não da função nem do ator atingido.
 	// A destruição de AActor é diferida; a liberação de sua memória cabe posteriormente ao coletor de lixo.

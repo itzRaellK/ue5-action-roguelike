@@ -2,8 +2,10 @@
 #include "RogueCharacter.h"
 #include "Projectiles/RogueProjectileMagic.h"
 #include "EnhancedInputComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ARogueCharacter::ARogueCharacter()
 {
@@ -97,6 +99,21 @@ void ARogueCharacter::Look(const FInputActionInstance& InValue)
 // receber o evento de entrada, por si só, não cria nem dispara um projétil.
 void ARogueCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackMontage);
+
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f;
+
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingEffect, GetMesh(), MuzzleSocketName,
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);
+
+	UGameplayStatics::PlaySound2D(this, CastingSound);
+	
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ARogueCharacter::AttackTimerElapsed, AttackDelayTime);
+}
+
+void ARogueCharacter::AttackTimerElapsed()
+{
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(MuzzleSocketName);
 	FRotator SpawnRotation = GetControlRotation();
 	FActorSpawnParameters SpawnParams;
@@ -109,6 +126,5 @@ void ARogueCharacter::PrimaryAttack()
 void ARogueCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

@@ -8,6 +8,7 @@ class UNiagaraSystem;
 class UProjectileMovementComponent;
 class USphereComponent;
 class UNiagaraComponent;
+class UAudioComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ARogueProjectileMagic : public AActor
@@ -16,16 +17,28 @@ class ACTIONROGUELIKE_API ARogueProjectileMagic : public AActor
 	
 protected:
 
+	// TSubclassOf<UDamageType> guarda uma referência de classe (UClass) restrita a UDamageType
+	// ou a uma de suas subclasses. Não é uma instância de dano nem um componente.
+	// StaticClass() obtém a classe UDamageType da reflexão da Unreal, sem criar um objeto desse tipo.
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	TSubclassOf<UDamageType> DmgTypeClass;
+
 	// Asset Niagara usado no impacto. UNiagaraSystem descreve o efeito; UNiagaraComponent é o
 	// componente que executa um sistema no mundo. A referência ao asset não o reproduz automaticamente.
 	UPROPERTY(EditDefaultsOnly, Category="Effects")
 	TObjectPtr<UNiagaraSystem> ExplosionEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	TObjectPtr<USoundBase> ExplosionSound;
 
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	TObjectPtr<USphereComponent> SphereComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	TObjectPtr<UNiagaraComponent> LoopedNiagaraComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category="Components")
+	TObjectPtr<UAudioComponent> LoopedAudioComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;

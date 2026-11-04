@@ -14,6 +14,8 @@ struct FInputActionValue;
 class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
+class UAnimMontage;
+class UNiagaraSystem;
 
 UCLASS(Abstract)
 class ACTIONROGUELIKE_API ARogueCharacter : public ACharacter
@@ -30,6 +32,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="PrimaryAttack")
 	FName MuzzleSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
+	TObjectPtr<UAnimMontage> AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
+	TObjectPtr<UNiagaraSystem> CastingEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
+	TObjectPtr<USoundBase> CastingSound;
 
 	// Em C++, membros protected podem ser acessados pela própria classe, por classes derivadas
 	// e por seus amigos (friend), respeitando as regras de acesso da linguagem.
@@ -77,6 +88,9 @@ protected:
 	// como ActionRoguelike e EnhancedInput; suas regras são definidas em arquivos .Build.cs.
 	// O Enhanced Input aceita esta assinatura sem parâmetros quando não precisamos consultar o valor da ação.
 	void PrimaryAttack();
+
+	// Novo metodo
+	void AttackTimerElapsed();
 
 public:	
 	virtual void Tick(float DeltaTime) override;
